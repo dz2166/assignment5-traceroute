@@ -1,4 +1,3 @@
-from socket import *
 import os
 import sys
 import struct
@@ -6,6 +5,7 @@ import time
 import select
 import binascii
 import pandas as pd
+import socket
 
 ICMP_ECHO_REQUEST = 8
 MAX_HOPS = 60
@@ -58,7 +58,7 @@ def build_packet():
     if sys.platform == 'darwin':
         myChecksum = socket.htons(myChecksum) & 0xffff
     else:
-        myChecksum = htons(myChecksum)
+        myChecksum = socket.htons(myChecksum)
 
     header = struct.pack("bbHHh", ICMP_ECHO_REQUEST, 0, myChecksum, ID, 1)
 
@@ -126,6 +126,7 @@ def get_route(hostname):
                     df = df.append({'Hop Count': ttl, 'Try': tries + 1, 'IP': addr[0], 'Hostname': host,
                                     'Response Code': 'unknown'}, ignore_index=True)
                 break
+    # If we reached the end of the loop without finding a successful route, return the dataframe
     return df
 
 if __name__ == '__main__':
