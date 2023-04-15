@@ -19,7 +19,7 @@ TRIES = 1
 # We shall use the same packet that we built in the Ping exercise
 
 def checksum(string):
-    # In this function we make the checksum of our packet
+# In this function we make the checksum of our packet
     csum = 0
     countTo = (len(string) // 2) * 2
     count = 0
@@ -41,10 +41,14 @@ def checksum(string):
     answer = answer >> 8 | (answer << 8 & 0xff00)
     return answer
 
-
 def build_packet():
+   
+    # In the sendOnePing() method of the ICMP Ping exercise ,firstly the header of our
+    # packet to be sent was made, secondly the checksum was appended to the header and
+    # then finally the complete packet was sent to the destination.
     # Make the header in a similar way to the ping exercise.
     # Append checksum to the header.
+    
     myChecksum = 0
     ID = os.getpid() & 0xFFFF
 
@@ -54,16 +58,15 @@ def build_packet():
     # Calculate the checksum on the data and the dummy header.
     myChecksum = checksum(header + data)
 
-    # Now that we have the right checksum, we put that in. It's just easier to
-    # make up a new header than to stuff it into the dummy.
+    # Now that we have the right checksum, we can put that in.
     if sys.platform == 'darwin':
         myChecksum = socket.htons(myChecksum) & 0xffff
     else:
         myChecksum = socket.htons(myChecksum)
 
     header = struct.pack("bbHHh", ICMP_ECHO_REQUEST, 0, myChecksum, ID, 1)
-
     # Don’t send the packet yet , just return the final packet in this function.
+ 
     packet = header + data
     return packet
 
@@ -75,6 +78,8 @@ def get_route(hostname):
 
     for ttl in range(1, MAX_HOPS):
         for tries in range(TRIES):
+            # Make a raw socket named mySocket
+            
             mySocket = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_ICMP)
             mySocket.setsockopt(socket.IPPROTO_IP, socket.IP_TTL, struct.pack('I', ttl))
             mySocket.settimeout(TIMEOUT)
@@ -127,7 +132,7 @@ def get_route(hostname):
                     df = df.append({'Hop Count': ttl, 'Try': tries + 1, 'IP': addr[0], 'Hostname': host,
                                     'Response Code': 'unknown'}, ignore_index=True)
                 break
-    # If we reached the end of the loop without finding a successful route, return the dataframe
+   
     return df
 
 if __name__ == '__main__':
