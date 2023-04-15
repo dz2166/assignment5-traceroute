@@ -70,30 +70,6 @@ def build_packet():
 def get_route(hostname):
     timeLeft = TIMEOUT
     df = pd.DataFrame(columns=['Hop Count', 'Try', 'IP', 'Hostname', 'Response Code'])
-    destAddr = gethostbyname(hostname)
-
-    for ttl in range(1, MAX_HOPS):
-        for tries in range(TRIES):
-            # Make a raw socket named mySocket
-            icmp = getprotobyname("icmp")
-            mySocket = socket(AF_INET, SOCK_RAW, icmp)
-
-            mySocket.setsockopt(IPPROTO_IP, IP_TTL, struct.pack('I', ttl))
-            mySocket.settimeout(TIMEOUT)
-            try:
-                d = build_packet()
-                mySocket.sendto(d, (hostname, 0))
-                t = time.time()
-                startedSelect = time.time()
-                whatReady = select.select([mySocket], [], [], timeLeft)
-                howLongInSelect = (time.time() - startedSelect)
-                if whatReady[0] == []:  # Timeout
-                    df = df.append({'Hop Count': ttl, 'Try': tries + 1, 'IP': '
-
-
-def get_route(hostname):
-    timeLeft = TIMEOUT
-    df = pd.DataFrame(columns=['Hop Count', 'Try', 'IP', 'Hostname', 'Response Code'])
     destAddr = socket.gethostbyname(hostname)
 
     for ttl in range(1, MAX_HOPS):
